@@ -1,288 +1,183 @@
-# 🗑️ SMARTRASH - Smart Waste Management System
 
-A comprehensive IoT-based waste management system that connects municipalities, customers, collection agents, and recyclers through an intelligent platform with smart bin monitoring.
 
-![Django](https://img.shields.io/badge/Django-3.2-green)
-![Python](https://img.shields.io/badge/Python-3.8+-blue)
-![IoT](https://img.shields.io/badge/IoT-Enabled-orange)
 
-## 🌟 Features
+```markdown
+# SMARTRASH - Smart Waste Management System
 
-### 🤖 Smart Bin Monitoring
-- **Real-time Level Detection**: Ultrasonic sensors monitor waste levels
-- **Automatic Notifications**: Alerts when bins reach 75% capacity
-- **IoT Integration**: NodeMCU with WiFi connectivity
-- **LED Status Indicators**: Visual feedback for bin status
+A **complete, simple, and functional** Django + IoT-based waste management platform.
 
-### 💰 Digital Payment System
-- **Wallet Integration**: Prepaid wallet system for payments
-- **Automated Billing**: Automatic payment processing
-- **Collection Fees**: Configurable rates per municipality
-- **Recycling Payments**: Dynamic pricing based on waste type
+---
 
-### 🔄 Multi-User Platform
-- **Customers**: Bin linking, payment, recycler booking
-- **Municipalities**: Dashboard, user approval, task assignment
-- **Collection Agents**: Task management, waste collection
-- **Recyclers**: Booking management, rate configuration
-- **Admin**: System oversight and management
+## Features
 
-### ♻️ Recycling Integration
-- **Waste Type Classification**: Plastic, Paper, Metal
-- **Dynamic Pricing**: Different rates for different materials
-- **Booking System**: Schedule recyclable waste collection
-- **Agent Assignment**: Integrated collection workflow
+| Feature | Description |
+|--------|-------------|
+| **IoT Smart Bins** | Real-time fill level via NodeMCU + Ultrasonic sensor |
+| **Auto Full Detection** | Triggers at ≥75% |
+| **Digital Wallet** | Pay for collection, earn from recycling |
+| **Role-Based Dashboards** | Customer, Agent, Municipality, Recycler, Admin |
+| **Recycler Booking** | Sell plastic/paper/metal with auto pricing |
+| **Task Assignment** | Municipality assigns agents |
+| **Approval Workflow** | New users need municipality approval |
+| **REST API** | `/api/bin/update/` for bin status |
 
-## 🚀 Quick Start
+---
 
-### Prerequisites
-- Python 3.8+
-- Django 3.2
-- NodeMCU (for hardware implementation)
-- SQLite/MySQL Database
+## Tech Stack
 
-### Installation
+- **Backend**: Django 3.2
+- **Database**: SQLite (default)
+- **Frontend**: HTML + CSS (inline, responsive)
+- **IoT**: NodeMCU ESP8266 + HC-SR04
+- **Communication**: HTTP JSON API
 
-1. **Clone and Setup Project**
+---
+
+## User Roles
+
+| Role | Permissions |
+|------|-------------|
+| **Customer** | Link bin, book recycler, verify collection, manage wallet |
+| **Collection Agent** | View tasks, collect waste, enter bin ID |
+| **Municipality** | Approve users, assign tasks, monitor full bins |
+| **Recycler** | Set rates, accept bookings, assign agent |
+| **Admin** | Create municipalities, manage system |
+
+---
+
+## Project Structure
+
+```
+smartrash/
+├── manage.py
+├── smartrash/
+│   ├── settings.py
+│   ├── urls.py
+├── waste/
+│   ├── models.py
+│   ├── views.py
+│   ├── forms.py
+│   ├── urls.py
+│   └── templates/
+└── requirements.txt
+```
+
+---
+
+## Setup Instructions
+
 ```bash
-# Create project directory
+# 1. Create project
 django-admin startproject smartrash
 cd smartrash
 python manage.py startapp waste
 
-# Install dependencies
-pip install django==3.2 mysqlclient pillow
+# 2. Install dependencies
+pip install -r requirements.txt
 
+# 3. Copy code from smartrash_simple_code.py into:
+#    - waste/models.py
+#    - waste/views.py
+#    - waste/forms.py
+#    - waste/urls.py
+#    - templates/
 
+# 4. Update smartrash/urls.py
+path('', include('waste.urls'))
 
-SMARTRASH - Smart Waste Management System
-A comprehensive IoT-based waste management system that connects municipalities, customers, collection agents, and recyclers through an intelligent platform with smart bin monitoring.
-
-https://img.shields.io/badge/Django-3.2-green
-https://img.shields.io/badge/Python-3.8+-blue
-https://img.shields.io/badge/IoT-Enabled-orange
-
-🌟 Features
-🤖 Smart Bin Monitoring
-Real-time Level Detection: Ultrasonic sensors monitor waste levels
-
-Automatic Notifications: Alerts when bins reach 75% capacity
-
-IoT Integration: NodeMCU with WiFi connectivity
-
-LED Status Indicators: Visual feedback for bin status
-
-💰 Digital Payment System
-Wallet Integration: Prepaid wallet system for payments
-
-Automated Billing: Automatic payment processing
-
-Collection Fees: Configurable rates per municipality
-
-Recycling Payments: Dynamic pricing based on waste type
-
-🔄 Multi-User Platform
-Customers: Bin linking, payment, recycler booking
-
-Municipalities: Dashboard, user approval, task assignment
-
-Collection Agents: Task management, waste collection
-
-Recyclers: Booking management, rate configuration
-
-Admin: System oversight and management
-
-♻️ Recycling Integration
-Waste Type Classification: Plastic, Paper, Metal
-
-Dynamic Pricing: Different rates for different materials
-
-Booking System: Schedule recyclable waste collection
-
-Agent Assignment: Integrated collection workflow
-
-🚀 Quick Start
-Prerequisites
-Python 3.8+
-
-Django 3.2
-
-NodeMCU (for hardware implementation)
-
-SQLite/MySQL Database
-
-Installation
-Clone and Setup Project
-
-bash
-# Create project directory
-django-admin startproject smartrash
-cd smartrash
-python manage.py startapp waste
-
-# Install dependencies
-pip install django==3.2 mysqlclient pillow
-Database Configuration
-
-bash
-# Run migrations
+# 5. Migrate & run
 python manage.py makemigrations
 python manage.py migrate
-
-# Create superuser
 python manage.py createsuperuser
-Environment Setup
-
-bash
-# Create .env file with following variables:
-DATABASE_NAME=smartrash
-DATABASE_USER=your_username
-DATABASE_PASSWORD=your_password
-DATABASE_HOST=localhost
-DATABASE_PORT=3306
-SECRET_KEY=your_secret_key
-Run Development Server
-
-bash
 python manage.py runserver
-🏗️ Project Structure
-text
-smartrash/
-├── waste/                    # Main application
-│   ├── models.py            # Database models
-│   ├── views.py             # Application logic
-│   ├── urls.py              # URL routing
-│   └── templates/           # HTML templates
-├── smartrash/               # Project settings
-│   ├── settings.py          # Django settings
-│   └── urls.py              # Main URL config
-└── static/                  # Static files
-    ├── css/
-    ├── js/
-    └── images/
-🔧 Configuration
-Database Setup
-python
-# settings.py
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'smartrash',
-        'USER': 'your_username',
-        'PASSWORD': 'your_password',
-        'HOST': 'localhost',
-        'PORT': '3306',
-    }
+```
+
+---
+
+## IoT Hardware (Smart Bin)
+
+### Components:
+- NodeMCU ESP8266
+- HC-SR04 Ultrasonic Sensor
+- 3 LEDs (WiFi, Normal, Full)
+
+### Arduino Code:
+- Upload to NodeMCU
+- Update WiFi & server URL
+- Sends level every **60 seconds**
+
+---
+
+## API Endpoint
+
+```http
+POST /api/bin/update/
+Content-Type: application/json
+
+{
+  "bin_id": "BIN001",
+  "level": 82
 }
-IoT Hardware Requirements
-NodeMCU ESP8266
+→ { "status": "success" }
+```
 
-Ultrasonic Sensor (HC-SR04)
+---
 
-LED Indicators (Red, Green, Yellow)
+## Workflow
 
-Jumper Wires & Breadboard
+```
+1. Customer links bin
+2. Bin fills → IoT sends level
+3. Municipality sees full bin → Assigns agent
+4. Agent collects → Enters bin ID
+5. Customer verifies → Pays from wallet
+6. Municipality earns fee
+```
 
-5V Power Supply
+**Recycler Flow:**
+```
+Customer → Book (type + weight)
+Recycler → Assign agent
+Agent → Collect
+Customer → Pays recycler
+```
 
-🔌 API Endpoints
-Customer Endpoints
-POST /api/customer/register/ - Customer registration
+---
 
-POST /api/customer/login/ - Customer login
+## Key URLs
 
-GET /api/customer/bins/ - Get customer bins
+| Page | URL |
+|------|-----|
+| Home | `/` |
+| Login | `/login/` |
+| Customer Dashboard | `/customer/dashboard/` |
+| Municipality | `/municipality/dashboard/` |
+| Agent | `/agent/dashboard/` |
+| Recycler | `/recycler/dashboard/` |
 
-POST /api/customer/link-bin/ - Link bin to customer
+---
 
-Municipal Endpoints
-GET /api/municipal/dashboard/ - Municipal dashboard
+## Initial Setup (Admin)
 
-POST /api/municipal/assign-task/ - Assign collection task
+1. Login as superuser → `/admin`
+2. Create **Municipality**
+3. Add **Smart Bins** (e.g., `BIN001`)
+4. Users register → Municipality approves
 
-GET /api/municipal/pending-approvals/ - Get pending approvals
+---
 
-Collection Agent Endpoints
-GET /api/agent/tasks/ - Get assigned tasks
+## Future Ideas
 
-POST /api/agent/update-task/ - Update task status
+- Mobile App
+- GPS Tracking
+- Push Notifications
+- QR Code Bin Linking
+- Analytics Dashboard
 
-GET /api/agent/collection-history/ - Collection history
+---
 
-Recycler Endpoints
-POST /api/recycler/set-rates/ - Set recycling rates
+## License
 
-GET /api/recycler/bookings/ - Get recycling bookings
+**MIT License** – Free to use, modify, distribute.
 
-POST /api/recycler/update-booking/ - Update booking status
-
-🎯 Usage Guide
-For Customers
-Register and verify account
-
-Link your smart bin using bin ID
-
-Add funds to wallet
-
-Schedule recycling collections
-
-Monitor bin status in real-time
-
-For Municipalities
-Approve customer registrations
-
-Monitor bin fill levels across city
-
-Assign collection tasks to agents
-
-Configure collection rates
-
-Generate reports and analytics
-
-For Collection Agents
-Receive task notifications
-
-Update collection status
-
-Process payments from customer wallets
-
-Coordinate with recyclers
-
-For Recyclers
-Set dynamic pricing for materials
-
-Accept recycling bookings
-
-Coordinate collection with agents
-
-Process recycling payments
-
-🔬 IoT Integration
-Hardware Setup
-cpp
-// NodeMCU Code Structure
-#include <ESP8266WiFi.h>
-#include <WiFiClient.h>
-#include <ESP8266HTTPClient.h>
-
-// Sensor pins
-const int trigPin = D1;
-const int echoPin = D2;
-const int ledRed = D5;
-const int ledGreen = D6;
-const int ledYellow = D7;
-
-void setup() {
-  // Initialize sensors and WiFi
-  // Connect to WiFi network
-  // Setup HTTP client
-}
-
-void loop() {
-  // Read ultrasonic sensor
-  // Calculate distance/level
-  // Update LED indicators
-  // Send data to Django server
-  // Handle server responses
-}
-2. 
+---
