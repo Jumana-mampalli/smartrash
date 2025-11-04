@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SMARTRASH - Smart Waste Management</title>
+    <style>
+        body { font-family: Arial; margin: 0; padding: 20px; background: #f4f4f4; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; }
+        h1 { color: #28a745; }
+        .btn { padding: 10px 20px; background: #28a745; color: white; text-decoration: none; border-radius: 5px; }
+        .features { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 30px; }
+        .feature { padding: 20px; background: #f8f9fa; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗑️ SMARTRASH - Smart Waste Management System</h1>
+        <p>Efficient waste collection service connecting municipalities, customers, collection agents, and recyclers.</p>
+        
+        <div>
+            <a href="{% url 'login_view' %}" class="btn">Login</a>
+            <a href="{% url 'customer_register' %}" class="btn">Register as Customer</a>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <h3>📱 Smart Bins</h3>
+                <p>IoT-enabled bins with automatic level detection</p>
+            </div>
+            <div class="feature">
+                <h3>💳 Digital Wallet</h3>
+                <p>Easy payment system for waste collection</p>
+            </div>
+            <div class="feature">
+                <h3>♻️ Recycling</h3>
+                <p>Book recyclers for recyclable waste</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<!-- templates/login.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login - SMARTRASH</title>
+    <style>
+        body { font-family: Arial; background: #f4f4f4; padding: 50px; }
+        .login-box { max-width: 400px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; }
+        input { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #218838; }
+        .messages { padding: 10px; margin: 10px 0; background: #f8d7da; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h2>Login to SMARTRASH</h2>
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="messages">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        
+        <form method="POST">
+            {% csrf_token %}
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+        
+        <p><a href="{% url 'customer_register' %}">Register as Customer</a></p>
+        <p><a href="{% url 'home' %}">Back to Home</a></p>
+    </div>
+</body>
+</html>
+
+<!-- templates/customer_dashboard.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Dashboard</title>
+    <style>
+        body { font-family: Arial; margin: 0; padding: 0; }
+        .header { background: #28a745; color: white; padding: 20px; }
+        .container { padding: 20px; }
+        .card { background: white; padding: 20px; margin: 10px 0; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .btn { padding: 10px 15px; background: #28a745; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin: 5px; }
+        .wallet { font-size: 24px; font-weight: bold; color: #28a745; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        .status-pending { color: orange; }
+        .status-collected { color: blue; }
+        .status-verified { color: green; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Welcome, {{ customer.user.username }}!</h1>
+        <a href="{% url 'logout_view' %}" style="color: white;">Logout</a>
+    </div>
+    
+    <div class="container">
+        <div class="card">
+            <h2>💰 Wallet Balance</h2>
+            <div class="wallet">₹{{ customer.wallet_balance }}</div>
+            <a href="{% url 'customer_wallet' %}" class="btn">Add Money</a>
+        </div>
+        
+        <div class="card">
+            <h2>🗑️ Smart Bin Status</h2>
+            {% if bin %}
+                <p><strong>Bin ID:</strong> {{ bin.bin_id }}</p>
+                <p><strong>Current Level:</strong> {{ bin.current_level }}%</p>
+                <p><strong>Status:</strong> 
+                    {% if bin.is_full %}
+                        <span style="color: red;">🔴 Full - Collection Needed</span>
+                    {% else %}
+                        <span style="color: green;">🟢 Normal</span>
+                    {% endif %}
+                </p>
+            {% else %}
+                <p>No bin linked</p>
+                <a href="{% url 'link_bin' %}" class="btn">Link Bin</a>
+            {% endif %}
+        </div>
+        
+        <div class="card">
+            <h2>♻️ Recycler Services</h2>
+            <a href="{% url 'book_recycler' %}" class="btn">Book Recycler</a>
+        </div>
+        
+        <div class="card">
+            <h2>📋 Recent Collections</h2>
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Agent</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+                {% for collection in collections %}
+                <tr>
+                    <td>{{ collection.collection_date }}</td>
+                    <td>{{ collection.collection_agent.user.username }}</td>
+                    <td>₹{{ collection.amount }}</td>
+                    <td class="status-{{ collection.status }}">{{ collection.get_status_display }}</td>
+                    <td>
+                        {% if collection.status == 'collected' %}
+                            <a href="{% url 'verify_collection' collection.id %}" class="btn">Verify</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5">No collections yet</td></tr>
+                {% endfor %}
+            </table>
+        </div>
+        
+        <div class="card">
+            <h2>♻️ Recycler Bookings</h2>
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Waste Type</th>
+                    <th>Weight (kg)</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                </tr>
+                {% for booking in recycler_bookings %}
+                <tr>
+                    <td>{{ booking.collection_date }}</td>
+                    <td>{{ booking.get_waste_type_display }}</td>
+                    <td>{{ booking.weight }}</td>
+                    <td>₹{{ booking.amount }}</td>
+                    <td>{{ booking.get_status_display }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5">No bookings yet</td></tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</body>
+</html>
+
+<!-- templates/municipality_dashboard.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Municipality Dashboard</title>
+    <style>
+        body { font-family: Arial; margin: 0; padding: 0; }
+        .header { background: #007bff; color: white; padding: 20px; }
+        .container { padding: 20px; }
+        .card { background: white; padding: 20px; margin: 10px 0; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .btn { padding: 8px 15px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; font-size: 14px; }
+        .btn-success { background: #28a745; }
+        .btn-danger { background: #dc3545; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        .alert { padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Municipality: {{ municipality.name }}</h1>
+        <p>Wallet: ₹{{ municipality.wallet_balance }}</p>
+        <a href="{% url 'logout_view' %}" style="color: white;">Logout</a>
+    </div>
+    
+    <div class="container">
+        {% if full_bins %}
+        <div class="alert">
+            ⚠️ {{ full_bins.count }} bin(s) are full and need collection!
+        </div>
+        {% endif %}
+        
+        <div class="card">
+            <h2>🗑️ Full Bins - Need Collection</h2>
+            <table>
+                <tr>
+                    <th>Bin ID</th>
+                    <th>Customer</th>
+                    <th>Level</th>
+                    <th>Address</th>
+                    <th>Action</th>
+                </tr>
+                {% for bin in full_bins %}
+                <tr>
+                    <td>{{ bin.bin_id }}</td>
+                    <td>{{ bin.customer.user.username }}</td>
+                    <td>{{ bin.current_level }}%</td>
+                    <td>{{ bin.customer.address }}</td>
+                    <td><a href="{% url 'assign_collection_task' bin.id %}" class="btn btn-success">Assign Agent</a></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5">No full bins</td></tr>
+                {% endfor %}
+            </table>
+        </div>
+        
+        <div class="card">
+            <h2>👥 Pending Approvals</h2>
+            
+            <h3>Customers</h3>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                    <th>Action</th>
+                </tr>
+                {% for customer in pending_customers %}
+                <tr>
+                    <td>{{ customer.user.username }}</td>
+                    <td>{{ customer.phone }}</td>
+                    <td>{{ customer.address }}</td>
+                    <td><a href="{% url 'approve_customer' customer.id %}" class="btn btn-success">Approve</a></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4">No pending customers</td></tr>
+                {% endfor %}
+            </table>
+            
+            <h3>Collection Agents</h3>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Vehicle</th>
+                    <th>Action</th>
+                </tr>
+                {% for agent in pending_agents %}
+                <tr>
+                    <td>{{ agent.user.username }}</td>
+                    <td>{{ agent.phone }}</td>
+                    <td>{{ agent.vehicle_number }}</td>
+                    <td><a href="#" class="btn btn-success">Approve</a></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4">No pending agents</td></tr>
+                {% endfor %}
+            </table>
+        </div>
+        
+        <div class="card">
+            <h2>📋 Pending Collections</h2>
+            <table>
+                <tr>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Agent</th>
+                    <th>Status</th>
+                </tr>
+                {% for collection in pending_collections %}
+                <tr>
+                    <td>{{ collection.customer.user.username }}</td>
+                    <td>{{ collection.collection_date }}</td>
+                    <td>{{ collection.collection_agent.user.username|default:"Not assigned" }}</td>
+                    <td>{{ collection.get_status_display }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4">No pending collections</td></tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</body>
+</html>
+
+<!-- templates/agent_dashboard.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Collection Agent Dashboard</title>
+    <style>
+        body { font-family: Arial; margin: 0; padding: 0; }
+        .header { background: #6c757d; color: white; padding: 20px; }
+        .container { padding: 20px; }
+        .card { background: white; padding: 20px; margin: 10px 0; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .btn { padding: 8px 15px; background: #28a745; color: white; text-decoration: none; border-radius: 5px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Collection Agent: {{ agent.user.username }}</h1>
+        <a href="{% url 'logout_view' %}" style="color: white;">Logout</a>
+    </div>
+    
+    <div class="container">
+        <div class="card">
+            <h2>📋 My Tasks</h2>
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Customer</th>
+                    <th>Address</th>
+                    <th>Bin ID</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+                {% for task in tasks %}
+                <tr>
+                    <td>{{ task.collection_date }}</td>
+                    <td>{{ task.customer.user.username }}</td>
+                    <td>{{ task.customer.address }}</td>
+                    <td>{{ task.bin.bin_id }}</td>
+                    <td>{{ task.get_status_display }}</td>
+                    <td>
+                        {% if task.status == 'assigned' %}
+                            <a href="{% url 'collect_waste' task.id %}" class="btn">Collect</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6">No tasks assigned</td></tr>
+                {% endfor %}
+            </table>
+        </div>
+        
+        <div class="card">
+            <h2>♻️ Recycler Tasks</h2>
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Customer</th>
+                    <th>Waste Type</th>
+                    <th>Weight</th>
+                    <th>Address</th>
+                </tr>
+                {% for task in recycler_tasks %}
+                <tr>
+                    <td>{{ task.collection_date }}</td>
+                    <td>{{ task.customer.user.username }}</td>
+                    <td>{{ task.get_waste_type_display }}</td>
+                    <td>{{ task.weight }} kg</td>
+                    <td>{{ task.customer.address }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5">No recycler tasks</td></tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</body>
+</html>
