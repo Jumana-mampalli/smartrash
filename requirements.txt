@@ -1,8 +1,0 @@
-Django==3.2.20
-mysqlclient==2.1.1
-Pillow==9.5.0
-python-decouple==3.8
-django-crispy-forms==2.0
-requests==2.31.0
-pytz==2023.3
-django-cors-headers==4.0.0
